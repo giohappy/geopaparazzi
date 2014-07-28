@@ -136,7 +136,10 @@ public class SourcesTreeListActivity extends Activity implements OnClickListener
                     String valueString = value[0].toLowerCase();
                     String filterString = textToFilter.toLowerCase();
                     if (!valueString.contains(filterString)) {
+                      valueString = value[2].toLowerCase();
+                     if (!valueString.contains(filterString)) {
                         doAdd = false;
+                     }
                     }
                 }
                 if (doAdd)
