@@ -40,6 +40,58 @@ public class SPL_Rasterlite {
     public static String Rasterlite2Version_CPU = "";
 
     /**
+     * Retrieve resanable zoom level from rasterlite2 resolutions.
+     * <p/>
+     *
+     * @param db the database to use.
+     * @param vector_data data retrieved from RASTER_COVERAGES_QUERY_EXTENT_VALID_V42.
+     * @return reformatted vector_data with zoom_levels
+     */
+    public static String getRasterlite2ResolutionZoomlevel(Database db, String vector_data) {
+        String vector_value=vector_data;
+        double[] boundsCoordinates = new double[]{0.0, 0.0, 0.0, 0.0};
+        int i_min_zoom = 0;
+        int i_max_zoom = 30;
+        String[] sa_string = vector_data.split(";");
+        // RGB;256;3068;0.476376793524109,SELECT max(x_resolution_1_8) FROM 'berlin_seiter.1846_levels';
+        if (sa_string.length == 7) {
+         String s_pixel_type = sa_string[0];
+         String s_tile_width = sa_string[1];
+         String s_srid = sa_string[2];
+         String s_high_resolution = sa_string[3];
+        // 3;22580.9594625996,18644.645565919,28245.0795376013,22989.6782996524;2014-07-29T09:50:25.740Z
+         String s_num_bands = sa_string[4];
+         String s_bounds = sa_string[5];
+         String s_last_verified = sa_string[6];
+         sa_string = s_high_resolution.split(",");
+         s_high_resolution=sa_string[0];
+         double high_resolution = Double.parseDouble(s_high_resolution);
+         String s_select_low_rosolution=sa_string[1];
+         sa_string = s_bounds.split(",");
+         if (sa_string.length == 4) {
+          try {
+               boundsCoordinates[0] = Double.parseDouble(sa_string[0]);
+               boundsCoordinates[1] = Double.parseDouble(sa_string[1]);
+               boundsCoordinates[2] = Double.parseDouble(sa_string[2]);
+               boundsCoordinates[3] = Double.parseDouble(sa_string[3]);
+              } catch (NumberFormatException e) {
+           // ignore
+          }
+         }
+         vector_value=s_pixel_type+";";
+         vector_value+=s_tile_width+";";
+         vector_value+=s_srid+";";
+         String s_zoom_levels=i_min_zoom+","+i_max_zoom;
+         vector_value+=s_zoom_levels+";";
+         vector_value+=s_num_bands+";";
+         vector_value+=s_bounds+";";
+         vector_value+=s_last_verified+";";
+        }
+       return vector_value;
+    }
+
+
+    /**
      * Retrieve rasterlite2 image of a given bound and size.
      * <p/>
      * <p>https://github.com/geopaparazzi/Spatialite-Tasks-with-Sql-Scripts/wiki/RL2_GetMapImage

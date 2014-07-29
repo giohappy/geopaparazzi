@@ -316,7 +316,7 @@ public class SPL_Vectors implements ISpatialiteTableAndFieldsNames {
                                 spatialVectorMapCorrections.put(vector_entry.getKey(), vector_entry.getValue());
                             }
                         } else {
-                            // GPLog.asd(-1,"getSpatialVectorMap_Errors[not resolved]["+VECTOR_LAYERS_QUERY_MODE+"]  vector_key["+vector_key+"]  vector_value["+vector_value+"] vector_extent["+vector_extent+"]");
+                            // GPLog.androidLog(1,"getSpatialVectorMap_Errors[not resolved]["+VECTOR_LAYERS_QUERY_MODE+"]  vector_key["+vector_key+"]  vector_value["+vector_value+"] vector_extent["+vector_extent+"]");
                         }
                         GPLog.addLogEntry(LOGTAG, "getSpatialVectorMap_Errors[" + databaseType
                                 + "] [" + recovery_text + "] vector_key[" + vector_key + "] db[" + database.getFilename() + "]");
@@ -431,7 +431,7 @@ public class SPL_Vectors implements ISpatialiteTableAndFieldsNames {
                 if (vector_extent != null) {
                     spatialVectorMap.put(vector_key, vector_data + vector_extent);
                 } else { // should never happen
-                    // GPLog.asd(-1,
+                    // GPLog.androidLog(1,
                     // "-E-> getSpatialVectorMap_V3 vector_key[" + vector_key +
                     // "] vector_data["+ vector_data+"] vector_extent["+ vector_extent +
                     // "] VIEWS_QUERY_EXTENT_VALID_V3["+ VIEWS_QUERY_EXTENT_VALID_V3 + "]");
@@ -456,7 +456,7 @@ public class SPL_Vectors implements ISpatialiteTableAndFieldsNames {
                 if (vector_extent != null) {
                     spatialVectorMap.put(vector_key, vector_data + vector_extent);
                 } else { // should never happen
-                    // GPLog.asd(-1,
+                    // GPLog.androidLog(1,
                     // "-E-> getSpatialVectorMap_V3 vector_key[" + vector_key +
                     // "] vector_data["+ vector_data+"] vector_extent["+ vector_extent +
                     // "] LAYERS_QUERY_EXTENT_VALID_V3["+ LAYERS_QUERY_EXTENT_VALID_V3 + "]");
@@ -581,9 +581,12 @@ public class SPL_Vectors implements ISpatialiteTableAndFieldsNames {
                     vector_extent = statement.column_string(2);
                     if (vector_extent != null) { // mj10777: for some reason, this is being filled
                         // twice
-                        spatialVectorMap.put(vector_key, vector_data + vector_extent);
+                        // Adapt vector_data to usable min/max zoom_levels
+                        vector_data=SPL_Rasterlite.getRasterlite2ResolutionZoomlevel(database,vector_data + vector_extent);
+                        // GPLog.androidLog(1,"getSpatialVectorMap_V4 vector_key["+ vector_key+"] vector_data["+ vector_data +"] ");
+                        spatialVectorMap.put(vector_key, vector_data);
                     } else { // should never happen
-                        // GPLog.asd(-1,
+                        // GPLog.androidLog(1,
                         // "getSpatialVectorMap_V4 vector_key[" + vector_key +
                         // "] vector_data["+ vector_data+"] vector_extent["+ vector_extent +
                         // "] RASTER_COVERAGES_QUERY["+ RASTER_COVERAGES_QUERY_EXTENT_VALID_V42

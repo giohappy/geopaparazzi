@@ -624,7 +624,9 @@ public enum GeneralQueriesPreparer implements ISpatialiteTableAndFieldsNames {
             sb_query.append(" AS vector_key,pixel_type"); // 0 of second field
             sb_query.append("||';'||tile_width"); // 2
             sb_query.append("||';'||srid"); // 3
-            sb_query.append("||';'||horz_resolution||';' AS vector_data,"); // 4
+            sb_query.append("||';'||horz_resolution||','"); // 4a
+            sb_query.append("||'SELECT max(x_resolution_1_8) AS low_resolution FROM '''||coverage_name||'_levels'';'"); // 4b
+            sb_query.append(" AS vector_data,"); // 4
             VECTOR_LAYERS_QUERY_BASE = sb_query.toString();
         }
         {

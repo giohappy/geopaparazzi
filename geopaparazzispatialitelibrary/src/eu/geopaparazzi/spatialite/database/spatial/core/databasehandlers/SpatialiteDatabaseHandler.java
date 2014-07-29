@@ -731,12 +731,14 @@ public class SpatialiteDatabaseHandler extends AbstractSpatialDatabaseHandler {
                             // s_coord_dimension == tile_width - maybe usefull
                             // geometry_column == compression [LOSSY_WEBP] - not needed
                             // s_row_count_enabled == num_bands [3] - not needed
-                            //                            int i_tile_width = Integer.parseInt(s_coord_dimension);
-                            //                            double horz_resolution = Double.parseDouble(s_spatial_index_enabled);
-                            //                            int i_num_bands = Integer.parseInt(s_row_count_enabled);
+                            // int i_tile_width = Integer.parseInt(s_coord_dimension);
+                            // int i_num_bands = Integer.parseInt(s_row_count_enabled);
                             // TODO in next version add RasterTable
                             // berlin_postgrenzen.1890
-                            SpatialRasterTable table = new SpatialRasterTable(getDatabasePath(), table_name, s_srid, 0, 22,
+                            sa_string = s_spatial_index_enabled.split(",");
+                            int i_min_zoom = Integer.parseInt(sa_string[0]);
+                            int i_max_zoom = Integer.parseInt(sa_string[1]);
+                            SpatialRasterTable table = new SpatialRasterTable(getDatabasePath(), table_name, s_srid, i_min_zoom, i_max_zoom,
                                     centerCoordinate[0], centerCoordinate[1], null, boundsCoordinates);
                             table.setMapType(layerType);
                             table.setTitle(s_ROWID_PK);
