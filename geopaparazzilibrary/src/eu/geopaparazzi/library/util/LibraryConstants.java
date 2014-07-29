@@ -27,6 +27,11 @@ import java.text.DecimalFormat;
 public interface LibraryConstants {
 
     /**
+     * The value for the mapsdir-directory. 
+     */
+    public final String DEFAULT_MAPSDIR = "maps"; //$NON-NLS-1$
+
+    /**
      * The epsg for lat/long wgs84. 
      */
     public final String SRID_WGS84_4326 = "4326"; //$NON-NLS-1$

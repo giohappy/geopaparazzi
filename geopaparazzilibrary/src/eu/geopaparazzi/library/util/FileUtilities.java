@@ -76,7 +76,9 @@ public class FileUtilities {
         List<String> list_mapsFolds = new ArrayList<String>();
         File f = new File(path);
         File[] file = f.listFiles();
-
+        if (!start.equals(LibraryConstants.DEFAULT_MAPSDIR)) {
+         list_mapsFolds.add(LibraryConstants.DEFAULT_MAPSDIR);
+        }
         for( File fi : file ) {
             String name = fi.getName();
             if (fi.isDirectory() && name.contains(start)) {

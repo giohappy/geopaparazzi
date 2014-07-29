@@ -18,6 +18,7 @@
 package eu.hydrologis.geopaparazzi.preferences;
 
 import java.util.List;
+import java.io.File;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -33,6 +34,8 @@ import android.widget.TextView;
 import eu.geopaparazzi.library.database.GPLog;
 import eu.geopaparazzi.library.util.FileUtilities;
 import eu.geopaparazzi.library.util.ResourcesManager;
+import eu.geopaparazzi.library.database.GPLog;
+import eu.geopaparazzi.library.util.LibraryConstants;
 import eu.hydrologis.geopaparazzi.R;
 
 /**
@@ -45,6 +48,7 @@ public class CustomMapsFolderPreference extends DialogPreference {
     private Context context;
     private EditText editView;
     private String customFolder = ""; //$NON-NLS-1$
+    private String sdcardFolder = ""; //$NON-NLS-1$
     private Spinner guessedFolderSpinner;
     private List<String> guessedFoldersList;
     /**
@@ -54,6 +58,14 @@ public class CustomMapsFolderPreference extends DialogPreference {
     public CustomMapsFolderPreference( Context ctxt, AttributeSet attrs ) {
         super(ctxt, attrs);
         this.context = ctxt;
+        try {
+         // mj10777: set start value with existing value
+         customFolder=ResourcesManager.getInstance(this.context).getMapsDir().getAbsolutePath();
+         sdcardFolder=ResourcesManager.getInstance(this.context).getSdcardDir().getAbsolutePath();
+        }
+        catch (Exception e) {
+         GPLog.error(this, "CustomMapsFolderPreference[invalid getSdcardDir or getMapsDir]", e);
+        }
         setPositiveButtonText(ctxt.getString(android.R.string.ok));
         setNegativeButtonText(ctxt.getString(android.R.string.cancel));
     }
@@ -95,26 +107,14 @@ public class CustomMapsFolderPreference extends DialogPreference {
         textView2.setPadding(2, 2, 2, 2);
         textView2.setText(R.string.restart_after_setting_maps_folder);
         mainLayout.addView(textView2);
-
-        // TODO get the custom root path
-        String path = ""; //$NON-NLS-1$
         try {
-            path = ResourcesManager.getInstance(context).getMapsDir().getParent();
+            guessedFoldersList = FileUtilities.getPossibleMapsFoldersList(sdcardFolder, LibraryConstants.DEFAULT_MAPSDIR); //$NON-NLS-1$
         } catch (java.lang.Exception e) {
             GPLog.error(this, "Error reading a custom tile source.", e); //$NON-NLS-1$
         }
-
-        if (GPLog.LOG_HEAVY)
-            GPLog.addLogEntry(this, "custom maps base path: " + path); //$NON-NLS-1$
-
-        // allow routine to continue if path is empty
-        try {
-            guessedFoldersList = FileUtilities.getPossibleMapsFoldersList(path, "maps"); //$NON-NLS-1$
-        } catch (java.lang.Exception e) {
-            GPLog.error(this, "Error reading a custom tile source.", e); //$NON-NLS-1$
-        }
-
-        guessedFoldersList.add(0, ""); //$NON-NLS-1$
+        
+        // mj10777: why is an empty string needed?
+        // guessedFoldersList.add(0, ""); //$NON-NLS-1$
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, guessedFoldersList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -150,14 +150,24 @@ public class CustomMapsFolderPreference extends DialogPreference {
         super.onDialogClosed(positiveResult);
 
         if (positiveResult) {
-            customFolder = editView.getText().toString().trim();
-            if (customFolder.length() == 0) {
-                // try combo
-                customFolder = guessedFolderSpinner.getSelectedItem().toString();
+            String newFolder = editView.getText().toString().trim();
+            if ((newFolder.length() == 0) || (newFolder.equals(customFolder))) {
+                // retrieve value from combo
+                newFolder = guessedFolderSpinner.getSelectedItem().toString();
             }
-            if (callChangeListener(customFolder)) {
-                persistString(customFolder);
+            else {
+             // mj10777: check if the user, in his/hers wisdom, has given us a valid directory
+             File check_Dir=new File(sdcardFolder,newFolder);
+             if (!check_Dir.exists())
+              // tsk,tsk ...
+              newFolder=customFolder;
             }
+            if (!newFolder.equals(customFolder)) {
+             // mj10777: only if the vlaue has changed
+             if (callChangeListener(newFolder)) {
+                 persistString(newFolder);
+             }
+           }
         }
     }
 

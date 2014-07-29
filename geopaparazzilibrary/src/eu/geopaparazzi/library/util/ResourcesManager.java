@@ -34,6 +34,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import eu.geopaparazzi.library.R;
+import eu.geopaparazzi.library.util.LibraryConstants;
 import eu.geopaparazzi.library.database.GPLog;
 
 /**
@@ -46,8 +47,6 @@ import eu.geopaparazzi.library.database.GPLog;
 public class ResourcesManager implements Serializable {
     private static final long serialVersionUID = 1L;
     // move down to access prefs
-    //private static final String PATH_MAPS = "maps"; //$NON-NLS-1$
-
     private static final String PATH_MEDIA = "media"; //$NON-NLS-1$
 
     /**
@@ -147,8 +146,7 @@ public class ResourcesManager implements Serializable {
          */
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(appContext);
         String baseFolder = preferences.getString(PREFS_KEY_BASEFOLDER, ""); //$NON-NLS-1$
-        String PATH_MAPS = preferences.getString(PREFS_KEY_CUSTOM_MAPSFOLDER, "maps"); //$NON-NLS-1$
-
+        String PATH_MAPS = preferences.getString(PREFS_KEY_CUSTOM_MAPSFOLDER, LibraryConstants.DEFAULT_MAPSDIR); //$NON-NLS-1$
         applicationDir = new File(baseFolder);
         File parentFile = applicationDir.getParentFile();
         boolean parentExists = false;
@@ -273,7 +271,12 @@ public class ResourcesManager implements Serializable {
             }
 
         exportDir = applicationDir.getParentFile();
-
+        if (!PATH_MAPS.equals(LibraryConstants.DEFAULT_MAPSDIR)) {
+         // mj10777: check if the user, in his/hers wisdom, has removed the [custom] directory
+         File check_Dir=new File(sdcardDir, PATH_MAPS);
+         if (!check_Dir.exists())
+          PATH_MAPS=LibraryConstants.DEFAULT_MAPSDIR;
+        }
         mapsDir = new File(sdcardDir, PATH_MAPS);
         if (!mapsDir.exists())
             if (!mapsDir.mkdir()) {
