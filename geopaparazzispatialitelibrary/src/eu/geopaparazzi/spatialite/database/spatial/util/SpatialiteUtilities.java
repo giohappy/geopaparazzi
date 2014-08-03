@@ -226,8 +226,10 @@ public class SpatialiteUtilities {
      * @param boundsCoordinates the coordinate array to fill with the bounds as [w,s,e,n].
     */
     public static void collectBoundsAndCenter( Database sqlite_db, String srid, double[] centerCoordinate,
-            double[] boundsCoordinates ) {
+            double[] boundsCoordinates, String tosrid ) {
         String centerQuery = "";
+        if (tosrid.equals(""))
+         tosrid="4326";
         try {
             Stmt centerStmt = null;
             double bounds_west = boundsCoordinates[0];
@@ -253,12 +255,12 @@ public class SpatialiteUtilities {
                 centerBuilder.append("(" + bounds_west + " + (" + bounds_east + " - " + bounds_west + ")/2), ");
                 centerBuilder.append("(" + bounds_south + " + (" + bounds_north + " - " + bounds_south + ")/2), ");
                 centerBuilder.append(srid);
-                centerBuilder.append("),4326))) AS Center,");
+                centerBuilder.append("),"+tosrid+"))) AS Center,");
                 centerBuilder.append("ST_AsBinary(CastToXY(ST_Transform(BuildMBR(");
                 centerBuilder.append("" + bounds_west + "," + bounds_south + ", ");
                 centerBuilder.append("" + bounds_east + "," + bounds_north + ", ");
                 centerBuilder.append(srid);
-                centerBuilder.append("),4326))) AS Envelope ");
+                centerBuilder.append("),"+tosrid+"))) AS Envelope ");
                 // centerBuilder.append("';");
                 centerQuery = centerBuilder.toString();
                 // GPLog.androidLog(-1, "SpatialiteUtilities.collectBoundsAndCenter Bounds[" +

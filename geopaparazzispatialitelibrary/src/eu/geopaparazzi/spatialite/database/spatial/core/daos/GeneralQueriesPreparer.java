@@ -207,6 +207,9 @@ public enum GeneralQueriesPreparer implements ISpatialiteTableAndFieldsNames {
      * Results will be returned in a format used by Spatialite 4 Databases
      * further documentation can be found here:
      * https://github.com/geopaparazzi/Spatialite-Tasks-with-Sql-Scripts/wiki/RASTER_COVERAGES_QUERYS-geopaparazzi-specific#RASTER_COVERAGES_QUERY_EXTENT_INVALID_V42
+     * <p/>
+     * Note. a sql query to retrieve the low_resolution will be created
+     * - used in SPL_Rasterlite.getRasterlite2ResolutionZoomlevel
      */
     RASTER_COVERAGES_QUERY_EXTENT_INVALID_V42,
     /**
@@ -625,6 +628,7 @@ public enum GeneralQueriesPreparer implements ISpatialiteTableAndFieldsNames {
             sb_query.append("||';'||tile_width"); // 2
             sb_query.append("||';'||srid"); // 3
             sb_query.append("||';'||horz_resolution||','"); // 4a
+            // sql query to retrieve low resolution for this Raster-Table
             sb_query.append("||'SELECT max(x_resolution_1_8) AS low_resolution FROM '''||coverage_name||'_levels'';'"); // 4b
             sb_query.append(" AS vector_data,"); // 4
             VECTOR_LAYERS_QUERY_BASE = sb_query.toString();

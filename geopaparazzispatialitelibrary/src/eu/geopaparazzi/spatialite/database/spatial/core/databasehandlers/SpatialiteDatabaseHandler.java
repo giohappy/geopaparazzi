@@ -612,7 +612,7 @@ public class SpatialiteDatabaseHandler extends AbstractSpatialDatabaseHandler {
                         } catch (NumberFormatException e) {
                         }
                         if (!s_srid.equals("4326")) { // Transform into wsg84 if needed
-                            SpatialiteUtilities.collectBoundsAndCenter(dbJava, s_srid, centerCoordinate, boundsCoordinates);
+                            SpatialiteUtilities.collectBoundsAndCenter(dbJava, s_srid, centerCoordinate, boundsCoordinates,"4326");
                         } else {
                             centerCoordinate[0] = boundsCoordinates[0] + (boundsCoordinates[2] - boundsCoordinates[0]) / 2;
                             centerCoordinate[1] = boundsCoordinates[1] + (boundsCoordinates[3] - boundsCoordinates[1]) / 2;
@@ -718,7 +718,7 @@ public class SpatialiteDatabaseHandler extends AbstractSpatialDatabaseHandler {
                             // ignore
                         }
                         if (!s_srid.equals("4326")) { // Transform into wsg84 if needed
-                            SpatialiteUtilities.collectBoundsAndCenter(dbJava, s_srid, centerCoordinate, boundsCoordinates);
+                            SpatialiteUtilities.collectBoundsAndCenter(dbJava, s_srid, centerCoordinate, boundsCoordinates,"4326");
                         } else {
                             centerCoordinate[0] = boundsCoordinates[0] + (boundsCoordinates[2] - boundsCoordinates[0]) / 2;
                             centerCoordinate[1] = boundsCoordinates[1] + (boundsCoordinates[3] - boundsCoordinates[1]) / 2;
